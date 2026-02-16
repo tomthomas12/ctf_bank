@@ -1,0 +1,25 @@
+cd /var/www/html/wolfcore-bank
+
+# Set ownership to Apache user
+sudo chown -R www-data:www-data /var/www/html/wolfcore-bank
+
+# Set directory permissions
+sudo chmod 755 /var/www/html/wolfcore-bank
+sudo chmod 755 /var/www/html/wolfcore-bank/uploads
+
+# Set file permissions
+sudo chmod 644 /var/www/html/wolfcore-bank/*.php
+sudo chmod 644 /var/www/html/wolfcore-bank/*.css
+sudo chmod 600 /var/www/html/wolfcore-bank/config.php
+```
+
+## 🌐 Access Your Application
+
+Open your browser and go to:
+```
+http://localhost/wolfcore-bank/
+```
+
+Or if accessing from another machine:
+```
+http://YOUR_SERVER_IP/wolfcore-bank/
