@@ -1,3 +1,13 @@
+# Install the mysqli extension for PHP 8.1
+sudo apt update
+sudo apt install php8.1-mysqli -y
+
+# Restart Apache (if using Apache)
+sudo systemctl restart apache2
+
+# Or restart PHP-FPM (if using PHP-FPM)
+sudo systemctl restart php8.1-fpm
+
 # Start Apache
 sudo systemctl start apache2
 
