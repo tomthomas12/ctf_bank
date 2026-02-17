@@ -1,45 +1,18 @@
-# Install the mysqli extension for PHP 8.1
+# Update package list first
 sudo apt update
-sudo apt install php8.1-mysqli -y
 
-# Restart Apache (if using Apache)
+# Install Apache
+sudo apt install apache2 -y
+
+# Install MySQL
+sudo apt install mysql-server -y
+
+# Install PHP and ALL required extensions
+sudo apt install php8.1 php8.1-mysql php8.1-mysqli php8.1-mbstring php8.1-xml php8.1-curl php8.1-zip php8.1-gd libapache2-mod-php8.1 -y
+
+# Enable Apache modules
+sudo a2enmod rewrite
+sudo a2enmod php8.1
+
+# Restart Apache
 sudo systemctl restart apache2
-
-# Or restart PHP-FPM (if using PHP-FPM)
-sudo systemctl restart php8.1-fpm
-
-# Start Apache
-sudo systemctl start apache2
-
-# Enable Apache to start on boot
-sudo systemctl enable apache2
-
-# Check Apache status
-sudo systemctl status apache2
-
-
-cd /var/www/html/wolfcore-bank
-
-# Set ownership to Apache user
-sudo chown -R www-data:www-data /var/www/html/wolfcore-bank
-
-# Set directory permissions
-sudo chmod 755 /var/www/html/wolfcore-bank
-sudo chmod 755 /var/www/html/wolfcore-bank/uploads
-
-# Set file permissions
-sudo chmod 644 /var/www/html/wolfcore-bank/*.php
-sudo chmod 644 /var/www/html/wolfcore-bank/*.css
-sudo chmod 600 /var/www/html/wolfcore-bank/config.php
-```
-
-## 🌐 Access Your Application
-
-Open your browser and go to:
-```
-http://localhost/wolfcore-bank/
-```
-
-Or if accessing from another machine:
-```
-http://YOUR_SERVER_IP/wolfcore-bank/
