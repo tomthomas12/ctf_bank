@@ -1,4 +1,9 @@
 <?php
+// Configure PHP upload settings
+ini_set('upload_max_filesize', '10M');
+ini_set('post_max_size', '10M');
+ini_set('max_execution_time', '300');
+
 require_once 'config.php';
 
 if (!isset($_SESSION['user_id']) || !$_SESSION['is_vip']) {
@@ -102,10 +107,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['document'])) {
                 <div class="benefit-card">
                     <h3>Investment Access</h3>
                     <p>Exclusive investment opportunities</p>
-                </div>
-            <div class="benefit-card">
-                    <h3>FLAG</h3>
-                    <p>FLAG{R4c3_C0nd1t10n_Expl01t3d}</p>
                 </div>
             </div>
         </div>
