@@ -1,18 +1,131 @@
-# Update package list first
-sudo apt update
-
-# Install Apache
+Step 1: Update Package Lists Only
+bashsudo apt update
+# Skip: sudo apt upgrade
+Step 2: Install All Required Packages
+bash# Install Apache2
 sudo apt install apache2 -y
 
 # Install MySQL
 sudo apt install mysql-server -y
 
-# Install PHP and ALL required extensions
-sudo apt install php8.1 php8.1-mysql php8.1-mysqli php8.1-mbstring php8.1-xml php8.1-curl php8.1-zip php8.1-gd libapache2-mod-php8.1 -y
+# Install PHP and extensions
+sudo apt install php php-mysql php-mysqli php-mbstring php-xml php-curl php-zip php-gd libapache2-mod-php -y
+Step 3: Start Services
+bashsudo systemctl start apache2
+sudo systemctl enable apache2
+sudo systemctl start mysql
+sudo systemctl enable mysql
+Step 4: Setup Database
+bashsudo mysql << 'EOF'
+CREATE DATABASE wolfcore_bank;
+CREATE USER 'ctf_user'@'localhost' IDENTIFIED WITH mysql_native_password BY 'ctf_password';
+GRANT ALL PRIVILEGES ON wolfcore_bank.* TO 'ctf_user'@'localhost';
+FLUSH PRIVILEGES;
 
-# Enable Apache modules
-sudo a2enmod rewrite
+USE wolfcore_bank;
+
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    email VARCHAR(100) NOT NULL,
+    balance DECIMAL(10,2) DEFAULT 100.00,
+    is_vip BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE transactions (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    from_user_id INT NOT NULL,
+    to_username VARCHAR(50) NOT NULL,
+    amount DECIMAL(10,2) NOT NULL,
+    transaction_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    status VARCHAR(20) DEFAULT 'completed',
+    FOREIGN KEY (from_user_id) REFERENCES users(id)
+);
+
+CREATE TABLE services (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    service_name VARCHAR(100) NOT NULL,
+    description TEXT NOT NULL,
+    category VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE flags (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    flag_name VARCHAR(50) NOT NULL,
+    flag_value VARCHAR(255) NOT NULL
+);
+
+INSERT INTO users (username, password, email, balance, is_vip) VALUES 
+('bob_joseph', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'bob@email.com', 500.00, FALSE),
+('john_doe', '$2y$10$E4kP9LqhKNzZ8vQmR3nS9.F7YxW5tN8hL2pQvM6sD1rJ9nT4zK8Be', 'john@email.com', 250.00, FALSE),
+('sarah_smith', '$2y$10$M7bN2xR4nK9yL5pT8sQ3v.H6YwJ1mN4fP9rZ7vX2cK5tL3oE6aGDi', 'sarah@email.com', 850.00, FALSE),
+('mary_doe', '$2y$10$P3qT5nW8xM2kZ7yR9vL4j.J8XbK6mP9cQ2nY5rT1wH4fN7sV8oDGa', 'mary@email.com', 750.00, FALSE);
+
+INSERT INTO services (service_name, description, category) VALUES
+('Personal Checking', 'Standard checking account with no monthly fees', 'Accounts'),
+('Savings Account', 'High-yield savings with competitive interest rates', 'Accounts'),
+('Business Banking', 'Comprehensive solutions for your business needs', 'Business'),
+('Mortgage Loans', 'Competitive rates for home financing', 'Loans'),
+('Auto Loans', 'Fast approval for vehicle purchases', 'Loans'),
+('Credit Cards', 'Reward cards with cashback benefits', 'Cards'),
+('Investment Services', 'Grow your wealth with our investment options', 'Investments');
+
+INSERT INTO flags (flag_name, flag_value) VALUES
+('sql_injection', 'THM{SQL_1nj3ct10n_M4st3r_2024}');
+EOF
+Step 5: Remove Default Apache Page
+bashsudo rm /var/www/html/index.html 2>/dev/null
+Step 6: Upload Your Files
+Download the archive I provided above (wolfcore-bank-complete.tar.gz), then on Ubuntu:
+bash# Extract to home directory
+cd ~
+tar -xzf wolfcore-bank-complete.tar.gz
+
+# Copy to web root
+sudo cp -r wolfcore-bank/* /var/www/html/
+
+# Set permissions
+sudo chown -R www-data:www-data /var/www/html/
+sudo chmod 755 /var/www/html/
+sudo chmod 644 /var/www/html/*.php
+sudo chmod 644 /var/www/html/style.css
+
+# Create uploads directory with write permissions
+sudo mkdir -p /var/www/html/uploads
+sudo chmod 777 /var/www/html/uploads
+Step 7: Configure PHP
+bash# Find your PHP version
+php -v
+
+# Edit php.ini (adjust version if different)
+sudo nano /etc/php/8.1/apache2/php.ini
+Change these lines:
+inifile_uploads = On
+upload_max_filesize = 10M
+post_max_size = 10M
+Save: Ctrl+X, Y, Enter
+Step 8: Enable Apache Modules & Restart
+bashsudo a2enmod rewrite
 sudo a2enmod php8.1
-
-# Restart Apache
 sudo systemctl restart apache2
+Step 9: Verify Everything
+bash# Check services running
+sudo systemctl status apache2
+sudo systemctl status mysql
+
+# Test database
+mysql -u ctf_user -pctf_password wolfcore_bank -e "SELECT username FROM users;"
+
+# Check web files
+ls -la /var/www/html/
+
+# Get IP
+hostname -I
+Step 10: Test Access
+bash# From Ubuntu
+curl http://localhost/ | head -20
+
+# From another machine
+http://YOUR_IP/
