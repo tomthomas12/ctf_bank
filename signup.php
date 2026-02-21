@@ -108,10 +108,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <p>Already have an account? <a href="index.php">Sign In</a></p>
             </div>
         </div>
-        
-        <div class="security-info">
-            <p>🔒 Your connection is secured with 256-bit SSL encryption</p>
-        </div>
     </div>
 </body>
 </html>
